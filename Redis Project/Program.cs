@@ -92,7 +92,7 @@ class RedisTest
 
             do_logging_writeline("Uncached execution time (Average of " + numExecutions.ToString() + " runs): " + (uncachedTime / numExecutions).ToString() + "µs");
             do_logging_writeline("Cached execution time (Average of " + numExecutions.ToString() + " runs): " + (cachedTime / numExecutions).ToString() + "µs");
-            do_logging_writeline(((uncachedTime / numExecutions) / (cachedTime / numExecutions)).ToString() + " times faster.");
+            do_logging_writeline(((uncachedTime / numExecutions) / (cachedTime / numExecutions)).ToString() + " times faster.\n");
         }
 
         // Process and time the queries for SQL Server
@@ -137,7 +137,7 @@ class RedisTest
 
             do_logging_writeline("Uncached execution time (Average of " + numExecutions.ToString() + " runs): " + (uncachedTime / numExecutions).ToString() + "µs");
             do_logging_writeline("Cached execution time (Average of " + numExecutions.ToString() + " runs): " + (cachedTime / numExecutions).ToString() + "µs");
-            do_logging_writeline(((uncachedTime / numExecutions) / (cachedTime / numExecutions)).ToString() + " times faster.");
+            do_logging_writeline(((uncachedTime / numExecutions) / (cachedTime / numExecutions)).ToString() + " times faster.\n");
         }
 
         // cleanup

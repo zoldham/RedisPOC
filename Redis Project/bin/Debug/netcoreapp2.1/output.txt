@@ -17,9 +17,10 @@ query {
   }
 }
 
-Uncached execution time (Average of 1000 runs): 18157µs
-Cached execution time (Average of 1000 runs): 285µs
-63 times faster.
+Uncached execution time (Average of 1000 runs): 19454µs
+Cached execution time (Average of 1000 runs): 289µs
+67 times faster.
+
 Current Query: 
 query {
   deviceById(deviceId: 1) {
@@ -36,9 +37,10 @@ query {
   }
 }
 
-Uncached execution time (Average of 1000 runs): 17939µs
-Cached execution time (Average of 1000 runs): 282µs
+Uncached execution time (Average of 1000 runs): 17949µs
+Cached execution time (Average of 1000 runs): 283µs
 63 times faster.
+
 Current Query: 
 {
   __schema {
@@ -49,9 +51,10 @@ Current Query:
   }
 }
 
-Uncached execution time (Average of 1000 runs): 11314µs
-Cached execution time (Average of 1000 runs): 329µs
-34 times faster.
+Uncached execution time (Average of 1000 runs): 9599µs
+Cached execution time (Average of 1000 runs): 328µs
+29 times faster.
+
 
 Beginning SQL Tests
 
@@ -60,14 +63,24 @@ SELECT *
 FROM Zach_SnapLogic_Demo
 WHERE id < 10;
 
-Uncached execution time (Average of 1000 runs): 5751µs
-Cached execution time (Average of 1000 runs): 298µs
-19 times faster.
+Uncached execution time (Average of 1000 runs): 6568µs
+Cached execution time (Average of 1000 runs): 282µs
+23 times faster.
+
 Current Query: 
 SELECT *
 FROM Zach_SnapLogic_Demo
 WHERE id < 1000;
 
-Uncached execution time (Average of 1000 runs): 248698µs
-Cached execution time (Average of 1000 runs): 1336µs
-186 times faster.
+Uncached execution time (Average of 1000 runs): 253249µs
+Cached execution time (Average of 1000 runs): 1332µs
+190 times faster.
+
+Current Query: 
+SELECT *
+FROM (SELECT * FROM Zach_SnapLogic_Demo WHERE id < 10) AS Q1, (SELECT * FROM Zach_SnapLogic_Demo WHERE id < 100 AND id >= 10) AS Q2;
+
+Uncached execution time (Average of 1000 runs): 381682µs
+Cached execution time (Average of 1000 runs): 1899µs
+200 times faster.
+

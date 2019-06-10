@@ -1,0 +1,2 @@
+SELECT *
+FROM (SELECT * FROM Zach_SnapLogic_Demo WHERE id < 10) AS Q1, (SELECT * FROM Zach_SnapLogic_Demo WHERE id < 100 AND id >= 10) AS Q2;
