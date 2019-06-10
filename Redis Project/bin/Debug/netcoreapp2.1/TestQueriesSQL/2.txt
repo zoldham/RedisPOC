@@ -1,0 +1,3 @@
+SELECT *
+FROM Zach_SnapLogic_Demo
+WHERE id < 1000;

@@ -1,0 +1,73 @@
+Filling With Garbage
+Beginning GraphQL Tests
+
+Current Query: 
+query {
+  deviceByOrgId(orgId: 1) {
+    deviceId
+    imei
+    serial
+    make
+    model
+    orgId
+    orgUrn
+    costCenterId
+    costCenterUrn
+    description
+  }
+}
+
+Uncached execution time (Average of 1000 runs): 18157µs
+Cached execution time (Average of 1000 runs): 285µs
+63 times faster.
+Current Query: 
+query {
+  deviceById(deviceId: 1) {
+    deviceId
+    imei
+    serial
+    make
+    model
+    orgId
+    orgUrn
+    costCenterId
+    costCenterUrn
+    description
+  }
+}
+
+Uncached execution time (Average of 1000 runs): 17939µs
+Cached execution time (Average of 1000 runs): 282µs
+63 times faster.
+Current Query: 
+{
+  __schema {
+    types {
+      name
+      kind
+    }
+  }
+}
+
+Uncached execution time (Average of 1000 runs): 11314µs
+Cached execution time (Average of 1000 runs): 329µs
+34 times faster.
+
+Beginning SQL Tests
+
+Current Query: 
+SELECT *
+FROM Zach_SnapLogic_Demo
+WHERE id < 10;
+
+Uncached execution time (Average of 1000 runs): 5751µs
+Cached execution time (Average of 1000 runs): 298µs
+19 times faster.
+Current Query: 
+SELECT *
+FROM Zach_SnapLogic_Demo
+WHERE id < 1000;
+
+Uncached execution time (Average of 1000 runs): 248698µs
+Cached execution time (Average of 1000 runs): 1336µs
+186 times faster.

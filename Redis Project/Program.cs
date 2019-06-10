@@ -23,12 +23,15 @@ class RedisTest
     static string SQLFolder = "TestQueriesSQL";                                                             // Config value: Folder to load SQL queries from
     static string dataFile = "redis_garbage.txt";                                                           // Config value: File to load pre-generated k-v pair for redis from
     static int numExecutions = 1000;                                                                        // Config value: Number of times to execute each query
+    static string logFile = "output.txt";                                                                   // Config value: File to duplicate logging to
+    static StreamWriter logWriter = new StreamWriter(logFile);                                              // Config value: The logging stream
 
     /*
      * Program entry point
      */ 
     static void Main(string[] args)
     {
+        logWriter.AutoFlush = true;
 
         // Get access to sql
         string connectionString = "Data Source=tcp:172.30.100.116;\n;Initial Catalog=DEV1_FE;\nUser ID=octopus;Password=octopus";
@@ -39,7 +42,7 @@ class RedisTest
         db.Execute("FLUSHALL");
 
         // Fill cache with garbage
-        Console.WriteLine("Filling With Garbage");
+        do_logging_writeline("Filling With Garbage");
         fill_redis_with_garbage();
 
         // Load the queries 
@@ -47,15 +50,15 @@ class RedisTest
         string[] sqlQueries = get_queries(numSQLQueries, SQLFolder);
 
         // Process and time the queries for Graphql
-        Console.WriteLine("Beginning GraphQL Tests\n");
+        do_logging_writeline("Beginning GraphQL Tests\n");
         for (int i = 0; i < numGraphQLQueries && !String.IsNullOrEmpty(graphqlQueries[i]); i++)
         {
 
             // Do logging, start timer
             string curQuery = graphqlQueries[i];
-            Console.WriteLine("Current Query: ");
-            Console.Write(curQuery + "\n\n");
-            Stopwatch timer = new Stopwatch();
+            do_logging_writeline("Current Query: ");
+            do_logging_write(curQuery + "\n\n");
+            MicroLibrary.MicroStopwatch timer = new MicroLibrary.MicroStopwatch();
 
             // Get the result into the cache
             string result = do_graphql_query(curQuery).GetAwaiter().GetResult();
@@ -68,7 +71,7 @@ class RedisTest
                 timer.Restart();
                 do_graphql_query(curQuery).GetAwaiter().GetResult();
                 timer.Stop();
-                cachedTime += timer.ElapsedMilliseconds;
+                cachedTime += timer.ElapsedMicroseconds;
             }
 
             // Time the query (uncached) and sum the execution times
@@ -83,24 +86,25 @@ class RedisTest
                 timer.Restart();
                 do_graphql_query(curQuery).GetAwaiter().GetResult();
                 timer.Stop();
-                uncachedTime += timer.ElapsedMilliseconds;
+                uncachedTime += timer.ElapsedMicroseconds;
 
             }
 
-            Console.WriteLine("Uncached execution time (" + numExecutions.ToString() + " runs): " + uncachedTime.ToString() + "ms");
-            Console.WriteLine("Cached execution time (" + numExecutions.ToString() + " runs): " + cachedTime.ToString() + "ms");
+            do_logging_writeline("Uncached execution time (Average of " + numExecutions.ToString() + " runs): " + (uncachedTime / numExecutions).ToString() + "µs");
+            do_logging_writeline("Cached execution time (Average of " + numExecutions.ToString() + " runs): " + (cachedTime / numExecutions).ToString() + "µs");
+            do_logging_writeline(((uncachedTime / numExecutions) / (cachedTime / numExecutions)).ToString() + " times faster.");
         }
 
         // Process and time the queries for SQL Server
-        Console.WriteLine("\nBeginning SQL Tests\n");
+        do_logging_writeline("\nBeginning SQL Tests\n");
         for (int i = 0; i < numSQLQueries && !String.IsNullOrEmpty(sqlQueries[i]); i++)
         {
 
             //Do logging, start timer
             string curQuery = sqlQueries[i];
-            Console.WriteLine("Current Query: ");
-            Console.Write(curQuery + "\n\n");
-            Stopwatch timer = new Stopwatch();
+            do_logging_writeline("Current Query: ");
+            do_logging_write(curQuery + "\n\n");
+            MicroLibrary.MicroStopwatch timer = new MicroLibrary.MicroStopwatch();
 
             // Get the result into the cache
             string result = do_sql_query(curQuery, cnn).GetAwaiter().GetResult();
@@ -113,7 +117,7 @@ class RedisTest
                 timer.Restart();
                 do_sql_query(curQuery, cnn).GetAwaiter().GetResult();
                 timer.Stop();
-                cachedTime += timer.ElapsedMilliseconds;
+                cachedTime += timer.ElapsedMicroseconds;
             }
 
             // Time the query (uncached) and sum the execution times
@@ -128,11 +132,12 @@ class RedisTest
                 timer.Restart();
                 do_sql_query(curQuery, cnn).GetAwaiter().GetResult();
                 timer.Stop();
-                uncachedTime += timer.ElapsedMilliseconds;
+                uncachedTime += timer.ElapsedMicroseconds;
             }
 
-            Console.WriteLine("Uncached execution time (" + numExecutions.ToString() + " runs): " + uncachedTime.ToString() + "ms");
-            Console.WriteLine("Cached execution time (" + numExecutions.ToString() + " runs): " + cachedTime.ToString() + "ms");
+            do_logging_writeline("Uncached execution time (Average of " + numExecutions.ToString() + " runs): " + (uncachedTime / numExecutions).ToString() + "µs");
+            do_logging_writeline("Cached execution time (Average of " + numExecutions.ToString() + " runs): " + (cachedTime / numExecutions).ToString() + "µs");
+            do_logging_writeline(((uncachedTime / numExecutions) / (cachedTime / numExecutions)).ToString() + " times faster.");
         }
 
         // cleanup
@@ -152,6 +157,18 @@ class RedisTest
         {
             db.StringSet(lines[i], lines[i + 1]);
         }
+    }
+
+    static void do_logging_write(string line)
+    {
+        Console.Write(line);
+        logWriter.Write(line);
+    }
+
+    static void do_logging_writeline(string line)
+    {
+        Console.WriteLine(line);
+        logWriter.WriteLine(line);
     }
 
     /*
@@ -283,7 +300,7 @@ class RedisTest
         // Get the column names
         foreach (DataRow row in tableSchema.Rows)
         {
-            //Console.WriteLine(row["ColumnName"].ToString());
+            //do_logging_writeline(row["ColumnName"].ToString());
             columnNames.Add(row["ColumnName"].ToString());
         }
 
