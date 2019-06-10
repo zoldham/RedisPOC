@@ -1,0 +1,14 @@
+query {
+  deviceById(deviceId: 1) {
+    deviceId
+    imei
+    serial
+    make
+    model
+    orgId
+    orgUrn
+    costCenterId
+    costCenterUrn
+    description
+  }
+}
