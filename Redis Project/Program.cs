@@ -159,12 +159,18 @@ class RedisTest
         }
     }
 
+    /*
+     * Logging with no appeneded newline
+     */ 
     static void do_logging_write(string line)
     {
         Console.Write(line);
         logWriter.Write(line);
     }
 
+    /*
+     * Logging with an appended newline
+     */ 
     static void do_logging_writeline(string line)
     {
         Console.WriteLine(line);
@@ -227,8 +233,7 @@ class RedisTest
             // Conditionally add to redis cache 
             if (true)//returnVal.Length <= 10000)
             {
-                db.StringSet(query, returnVal);
-                db.KeyExpireAsync(query, DateTime.UtcNow.AddDays(1));   // Set value to expire in 24 hours
+                db.StringSetAsync(query, returnVal);
             }
 
             // done
@@ -266,8 +271,7 @@ class RedisTest
             // Conditionally add to redis cache
             if (true)//returnVal.Length <= 10000)
             {
-                db.StringSet(query, returnVal);
-                db.KeyExpireAsync(query, DateTime.UtcNow.AddDays(1));   // Set value to expire in 24 hours
+                db.StringSetAsync(query, returnVal);
             }
 
             // done
@@ -282,7 +286,7 @@ class RedisTest
 
     /*
      * This function will convert the provided reader object into a json-style string.
-     * NOTE: Does not currently work properly, but will return a json (ish) string representation of the data
+     * Does not support container types. All types will be cast to a string and will need to be cast back by the user.
      * @Param reader: The reader that was generated when a query was executed. Will be transformed into a json string.
      */ 
     static string convert_reader_to_json(SqlDataReader reader)
@@ -318,10 +322,18 @@ class RedisTest
             result = $"{result}{{\n";
             for (int i = 0; i < columnNames.Count; i++)
             {
-                result = $"{result}\t\"{columnNames.ElementAt(i)}\": \"{reader.GetValue(ordinals.ElementAt(i)).ToString()}\",\n";
+                result = $"{result}\t\"{columnNames.ElementAt(i)}\": \"{reader.GetValue(ordinals.ElementAt(i)).ToString()}\"";
+                if (i == columnNames.Count - 1)
+                {
+                    result = $"{result}\n";
+                } else
+                {
+                    result = $"{result},\n";
+                }
             }
             result = $"{result}}}, ";
         }
+        result = result.Substring(0, result.Length - 2);
         result = $"{result}]";
 
         return result;
