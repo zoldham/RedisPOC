@@ -4,7 +4,7 @@
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp2.1</TargetFramework>
     <RootNamespace>Redis_Test</RootNamespace>
-    <StartupObject>RedisTest</StartupObject>
+    <StartupObject>Redis_Test.Generator</StartupObject>
   </PropertyGroup>
 
   <ItemGroup>

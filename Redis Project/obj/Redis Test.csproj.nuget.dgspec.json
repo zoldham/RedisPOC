@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\zoldham\\source\\repos\\Redis Test\\Redis Test.csproj": {}
+    "C:\\Users\\zoldham\\Documents\\Redis\\Redis Project\\Redis Test.csproj": {}
   },
   "projects": {
-    "C:\\Users\\zoldham\\source\\repos\\Redis Test\\Redis Test.csproj": {
+    "C:\\Users\\zoldham\\Documents\\Redis\\Redis Project\\Redis Test.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\zoldham\\source\\repos\\Redis Test\\Redis Test.csproj",
+        "projectUniqueName": "C:\\Users\\zoldham\\Documents\\Redis\\Redis Project\\Redis Test.csproj",
         "projectName": "Redis Test",
-        "projectPath": "C:\\Users\\zoldham\\source\\repos\\Redis Test\\Redis Test.csproj",
+        "projectPath": "C:\\Users\\zoldham\\Documents\\Redis\\Redis Project\\Redis Test.csproj",
         "packagesPath": "C:\\Users\\zoldham\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\zoldham\\source\\repos\\Redis Test\\obj\\",
+        "outputPath": "C:\\Users\\zoldham\\Documents\\Redis\\Redis Project\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"

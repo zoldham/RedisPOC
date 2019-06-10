@@ -11,9 +11,9 @@ namespace Redis_Test
 {
     class Generator
     {
-        static int numGarbage = 100000;
-        static int keySize = 10000;
-        static int valueSize = 3000;
+        static int numGarbage = 900000;
+        static int keySize = 10;
+        static int valueSize = 100;
         static void Main(string[] args)
         {
             string filename = "redis_garbage.txt";
