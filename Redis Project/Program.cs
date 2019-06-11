@@ -39,11 +39,11 @@ class RedisTest
         cnn.Open();
 
         // Flush the cache
-        db.Execute("FLUSHALL");
+        //db.Execute("FLUSHALL");
 
-        // Fill cache with garbage
-        do_logging_writeline("Filling With Garbage");
-        fill_redis_with_garbage();
+        //// Fill cache with garbage
+        //do_logging_writeline("Filling With Garbage");
+        //fill_redis_with_garbage();
 
         // Load the queries 
         string[] graphqlQueries = get_queries(numGraphQLQueries, GraphQLFolder);
@@ -90,6 +90,9 @@ class RedisTest
 
             }
 
+            // Cleanup
+            db.KeyDelete(curQuery);
+
             do_logging_writeline("Uncached execution time (Average of " + numExecutions.ToString() + " runs): " + (uncachedTime / numExecutions).ToString() + "µs");
             do_logging_writeline("Cached execution time (Average of " + numExecutions.ToString() + " runs): " + (cachedTime / numExecutions).ToString() + "µs");
             do_logging_writeline(((uncachedTime / numExecutions) / (cachedTime / numExecutions)).ToString() + " times faster.\n");
@@ -135,6 +138,9 @@ class RedisTest
                 uncachedTime += timer.ElapsedMicroseconds;
             }
 
+            // Cleanup
+            db.KeyDelete(curQuery);
+
             do_logging_writeline("Uncached execution time (Average of " + numExecutions.ToString() + " runs): " + (uncachedTime / numExecutions).ToString() + "µs");
             do_logging_writeline("Cached execution time (Average of " + numExecutions.ToString() + " runs): " + (cachedTime / numExecutions).ToString() + "µs");
             do_logging_writeline(((uncachedTime / numExecutions) / (cachedTime / numExecutions)).ToString() + " times faster.\n");
@@ -144,7 +150,7 @@ class RedisTest
         cnn.Close();
 
         // Flush the cache
-        db.Execute("FLUSHALL");
+        //db.Execute("FLUSHALL");
     }
 
     /*
