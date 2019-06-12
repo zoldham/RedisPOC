@@ -1,2 +1,15 @@
-SELECT *
-FROM (SELECT * FROM Zach_SnapLogic_Demo WHERE id < 10) AS Q1, (SELECT * FROM Zach_SnapLogic_Demo WHERE id < 100 AND id >= 10) AS Q2;
+select 
+    d.deviceId as deviceId
+    , d.description as description
+    , d.Imei as imei
+    , d.Serial as serial
+    , d.Make as make
+    , d.Model as model
+    , d.orgId as orgId
+    , d.orgUrn as orgUrn
+    , d.costCenterId as costCenterId
+    , d.costCenterUrn as costCenterUrn
+from 
+    devices as d
+where 
+    costCenterId = 1;

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
 using System.IO;
 using System.Collections.Generic;
 using System.Data;
@@ -14,17 +13,17 @@ class RedisTest
 {
 
     // Testing config values and database connections
-    static ConnectionMultiplexer redis = ConnectionMultiplexer.Connect("localhost");                        // Redis connection handler
-    static IDatabase db = redis.GetDatabase();                                                              // Redis database connection    
-    static GraphQLClient graphQL = new GraphQLClient("https://globaldeviceservice.int.koreone/api/v1");     // Graphql database connection
-    static int numGraphQLQueries = 10;                                                                      // Config value: Number of graphql queries to load
-    static int numSQLQueries = 10;                                                                          // Config value: Number of SQL queries to load
-    static string GraphQLFolder = "TestQueriesGraphQL";                                                     // Config value: Folder to load graphql queries from
-    static string SQLFolder = "TestQueriesSQL";                                                             // Config value: Folder to load SQL queries from
-    static string dataFile = "redis_garbage.txt";                                                           // Config value: File to load pre-generated k-v pair for redis from
-    static int numExecutions = 1000;                                                                        // Config value: Number of times to execute each query
-    static string logFile = "output.txt";                                                                   // Config value: File to duplicate logging to
-    static StreamWriter logWriter = new StreamWriter(logFile);                                              // Config value: The logging stream
+    static ConnectionMultiplexer redis = ConnectionMultiplexer.Connect("K1D-REDIS-CLST.ksg.int,password=ZECjTH9cx24ukQA");  // Redis connection handler
+    static IDatabase db = redis.GetDatabase();                                                                              // Redis database connection    
+    static GraphQLClient graphQL = new GraphQLClient("https://globaldeviceservice.dev.koreone/api/v1");                     // Graphql database connection
+    static int numGraphQLQueries = 10;                                                                                      // Config value: Number of graphql queries to load
+    static int numSQLQueries = 10;                                                                                          // Config value: Number of SQL queries to load
+    static string GraphQLFolder = "TestQueriesGraphQL";                                                                     // Config value: Folder to load graphql queries from
+    static string SQLFolder = "TestQueriesSQL";                                                                             // Config value: Folder to load SQL queries from
+    static string dataFile = "redis_garbage.txt";                                                                           // Config value: File to load pre-generated k-v pair for redis from
+    static int numExecutions = 100;                                                                                         // Config value: Number of times to execute each query
+    static string logFile = "output.txt";                                                                                   // Config value: File to duplicate logging to
+    static StreamWriter logWriter = new StreamWriter(logFile);                                                              // The logging stream
 
     /*
      * Program entry point
@@ -34,16 +33,9 @@ class RedisTest
         logWriter.AutoFlush = true;
 
         // Get access to sql
-        string connectionString = "Data Source=tcp:172.30.100.116;\n;Initial Catalog=DEV1_FE;\nUser ID=octopus;Password=octopus";
+        string connectionString = "Data Source=tcp:172.30.100.116;\n;Initial Catalog=GlobalDeviceService;\nUser ID=octopus;Password=octopus";
         SqlConnection cnn = new SqlConnection(connectionString);
         cnn.Open();
-
-        // Flush the cache
-        //db.Execute("FLUSHALL");
-
-        //// Fill cache with garbage
-        //do_logging_writeline("Filling With Garbage");
-        //fill_redis_with_garbage();
 
         // Load the queries 
         string[] graphqlQueries = get_queries(numGraphQLQueries, GraphQLFolder);
@@ -61,7 +53,7 @@ class RedisTest
             MicroLibrary.MicroStopwatch timer = new MicroLibrary.MicroStopwatch();
 
             // Get the result into the cache
-            string result = do_graphql_query(curQuery).GetAwaiter().GetResult();
+            string result = do_graphql_query_caching(curQuery).GetAwaiter().GetResult();
 
             // Time the query (cached) and sum the execution times
             long cachedTime = 0;
@@ -69,33 +61,31 @@ class RedisTest
             {
                 // Time the call and aggregate
                 timer.Restart();
-                do_graphql_query(curQuery).GetAwaiter().GetResult();
+                do_graphql_query_caching(curQuery).GetAwaiter().GetResult();
                 timer.Stop();
                 cachedTime += timer.ElapsedMicroseconds;
             }
+
+            // Cleanup
+            db.KeyDelete(curQuery);
 
             // Time the query (uncached) and sum the execution times
             long uncachedTime = 0;
             for (int j = 0; j < numExecutions; j++)
             {
 
-                // Remove from the cache
-                db.KeyDelete(curQuery);
-
                 // Time the call and aggregate
                 timer.Restart();
-                do_graphql_query(curQuery).GetAwaiter().GetResult();
+                do_graphql_query_no_caching(curQuery).GetAwaiter().GetResult();
                 timer.Stop();
                 uncachedTime += timer.ElapsedMicroseconds;
 
             }
 
-            // Cleanup
-            db.KeyDelete(curQuery);
-
             do_logging_writeline("Uncached execution time (Average of " + numExecutions.ToString() + " runs): " + (uncachedTime / numExecutions).ToString() + "µs");
             do_logging_writeline("Cached execution time (Average of " + numExecutions.ToString() + " runs): " + (cachedTime / numExecutions).ToString() + "µs");
-            do_logging_writeline(((uncachedTime / numExecutions) / (cachedTime / numExecutions)).ToString() + " times faster.\n");
+            do_logging_writeline(((double)(uncachedTime / numExecutions) / (double)(cachedTime / numExecutions)).ToString() + " times faster.\n");
+            //do_logging_writeline("Size of result set: " + result.Length.ToString() + "\n");
         }
 
         // Process and time the queries for SQL Server
@@ -110,7 +100,7 @@ class RedisTest
             MicroLibrary.MicroStopwatch timer = new MicroLibrary.MicroStopwatch();
 
             // Get the result into the cache
-            string result = do_sql_query(curQuery, cnn).GetAwaiter().GetResult();
+            string result = do_sql_query_caching(curQuery, cnn).GetAwaiter().GetResult();
 
             // Time the query (cached) and sum the execution times
             long cachedTime = 0;
@@ -118,51 +108,34 @@ class RedisTest
             {
                 // Time the call and aggregate
                 timer.Restart();
-                do_sql_query(curQuery, cnn).GetAwaiter().GetResult();
+                do_sql_query_caching(curQuery, cnn).GetAwaiter().GetResult();
                 timer.Stop();
                 cachedTime += timer.ElapsedMicroseconds;
             }
+
+            // Cleanup
+            db.KeyDelete(curQuery);
 
             // Time the query (uncached) and sum the execution times
             long uncachedTime = 0;
             for (int j = 0; j < numExecutions; j++)
             {
 
-                // Remove from the cache
-                db.KeyDelete(curQuery);
-
                 // Time the call and aggregate
                 timer.Restart();
-                do_sql_query(curQuery, cnn).GetAwaiter().GetResult();
+                do_sql_query_no_caching(curQuery, cnn).GetAwaiter().GetResult();
                 timer.Stop();
                 uncachedTime += timer.ElapsedMicroseconds;
             }
 
-            // Cleanup
-            db.KeyDelete(curQuery);
-
             do_logging_writeline("Uncached execution time (Average of " + numExecutions.ToString() + " runs): " + (uncachedTime / numExecutions).ToString() + "µs");
             do_logging_writeline("Cached execution time (Average of " + numExecutions.ToString() + " runs): " + (cachedTime / numExecutions).ToString() + "µs");
-            do_logging_writeline(((uncachedTime / numExecutions) / (cachedTime / numExecutions)).ToString() + " times faster.\n");
+            do_logging_writeline(((double)(uncachedTime / numExecutions) / (double)(cachedTime / numExecutions)).ToString() + " times faster.\n");
+            //do_logging_writeline("Size of result set: " + result.Length.ToString() + "\n");
         }
 
         // cleanup
         cnn.Close();
-
-        // Flush the cache
-        //db.Execute("FLUSHALL");
-    }
-
-    /*
-     * Load pre-generated random key-values pairs into the redis database
-     */ 
-    static void fill_redis_with_garbage()
-    {
-        string[] lines = System.IO.File.ReadAllLines(dataFile);
-        for (int i = 0; i < lines.Length; i += 2)
-        {
-            db.StringSet(lines[i], lines[i + 1]);
-        }
     }
 
     /*
@@ -215,10 +188,10 @@ class RedisTest
 
     /*
      * This function will either execute an arbitrary (NON MUTATION) graphql query, or return the cached result. Cached results
-     * are stored for 24 hours (configurable), or less if redis runs out of memory. 
+     * are stored until memory limits are exceeded, and then evicted using an LRU policy.
      * @Param: query is the string representation of the graphql query you wish to execute
      */ 
-    static async System.Threading.Tasks.Task<dynamic> do_graphql_query(string query)
+    static async System.Threading.Tasks.Task<dynamic> do_graphql_query_caching(string query)
     {
 
         // check if the query is in Redis cache
@@ -246,19 +219,33 @@ class RedisTest
             return returnVal;
         } else
         {
-
             // Is in redis cache, return result
             return returnVal;
         }
     }
 
     /*
-     * This function will either execute an arbitrary SELECT query, or return the cached result. Cached results
-     * are stored for 24 hours (configurable), or less if redis runs out of memory.
+     * This function will either execute an arbitrary (NON MUTATION) graphql query.
+     * @Param: query is the string representation of the graphql query you wish to execute
+     */
+    static async System.Threading.Tasks.Task<dynamic> do_graphql_query_no_caching(string query)
+    {
+
+        // Query graphql
+        var request = new GraphQLRequest { Query = query };
+        var graphQLResponse = await graphQL.PostAsync(request);
+
+        // done
+        return graphQLResponse;
+    }
+
+    /*
+     * This function will either execute an arbitrary (NON MUTATION) SQL query, or return the cached result. Cached results
+     * are stored until memory limits are exceeded, and then evicted using an LRU policy.
      * @Param: query is the string representation of the SQL query you wish to execute
      * @Param: cnn is the SQL server connection the query will be issued against
-     */ 
-    static async System.Threading.Tasks.Task<dynamic> do_sql_query(string query, SqlConnection cnn)
+     */
+    static async System.Threading.Tasks.Task<dynamic> do_sql_query_caching(string query, SqlConnection cnn)
     {
         // check if the query is in Redis cache
         string key = query;
@@ -291,10 +278,28 @@ class RedisTest
     }
 
     /*
+ * This function will execute an arbitrary SELECT query;
+ * @Param: query is the string representation of the SQL query you wish to execute
+ * @Param: cnn is the SQL server connection the query will be issued against
+ */
+    static async System.Threading.Tasks.Task<dynamic> do_sql_query_no_caching(string query, SqlConnection cnn)
+    {
+        // Query SQL
+        SqlCommand command = new SqlCommand(query, cnn);
+        SqlDataAdapter adapter = new SqlDataAdapter(command);
+        DataTable table = new DataTable();
+        adapter.Fill(table);
+        adapter.Dispose();
+
+        // done
+        return table;
+    }
+
+    /*
      * This function will convert the provided reader object into a json-style string.
      * Does not support container types. All types will be cast to a string and will need to be cast back by the user.
      * @Param reader: The reader that was generated when a query was executed. Will be transformed into a json string.
-     */ 
+     */
     static string convert_reader_to_json(SqlDataReader reader)
     {
         string result = "[";

@@ -1,6 +1,6 @@
 query {
   deviceById(deviceId: 1) {
-    deviceId
+    description
     imei
     serial
     make
@@ -9,6 +9,5 @@ query {
     orgUrn
     costCenterId
     costCenterUrn
-    description
   }
 }

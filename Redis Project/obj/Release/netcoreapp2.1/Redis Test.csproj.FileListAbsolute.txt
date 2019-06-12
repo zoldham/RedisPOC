@@ -1,0 +1,11 @@
+C:\Users\zoldham\Documents\Redis\Redis Project\bin\Release\netcoreapp2.1\Redis Test.deps.json
+C:\Users\zoldham\Documents\Redis\Redis Project\bin\Release\netcoreapp2.1\Redis Test.runtimeconfig.json
+C:\Users\zoldham\Documents\Redis\Redis Project\bin\Release\netcoreapp2.1\Redis Test.runtimeconfig.dev.json
+C:\Users\zoldham\Documents\Redis\Redis Project\bin\Release\netcoreapp2.1\Redis Test.dll
+C:\Users\zoldham\Documents\Redis\Redis Project\bin\Release\netcoreapp2.1\Redis Test.pdb
+C:\Users\zoldham\Documents\Redis\Redis Project\obj\Release\netcoreapp2.1\Redis Test.csprojAssemblyReference.cache
+C:\Users\zoldham\Documents\Redis\Redis Project\obj\Release\netcoreapp2.1\Redis Test.csproj.CoreCompileInputs.cache
+C:\Users\zoldham\Documents\Redis\Redis Project\obj\Release\netcoreapp2.1\Redis Test.AssemblyInfoInputs.cache
+C:\Users\zoldham\Documents\Redis\Redis Project\obj\Release\netcoreapp2.1\Redis Test.AssemblyInfo.cs
+C:\Users\zoldham\Documents\Redis\Redis Project\obj\Release\netcoreapp2.1\Redis Test.dll
+C:\Users\zoldham\Documents\Redis\Redis Project\obj\Release\netcoreapp2.1\Redis Test.pdb

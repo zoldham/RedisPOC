@@ -1,10 +1,9 @@
-Filling With Garbage
 Beginning GraphQL Tests
 
 Current Query: 
 query {
   deviceByOrgId(orgId: 1) {
-    deviceId
+    description
     imei
     serial
     make
@@ -13,18 +12,17 @@ query {
     orgUrn
     costCenterId
     costCenterUrn
-    description
   }
 }
 
-Uncached execution time (Average of 1000 runs): 18551µs
-Cached execution time (Average of 1000 runs): 292µs
-63 times faster.
+Uncached execution time (Average of 100 runs): 295549µs
+Cached execution time (Average of 100 runs): 40795µs
+7.24473587449442 times faster.
 
 Current Query: 
 query {
   deviceById(deviceId: 1) {
-    deviceId
+    description
     imei
     serial
     make
@@ -33,54 +31,95 @@ query {
     orgUrn
     costCenterId
     costCenterUrn
-    description
   }
 }
 
-Uncached execution time (Average of 1000 runs): 17362µs
-Cached execution time (Average of 1000 runs): 285µs
-60 times faster.
+Uncached execution time (Average of 100 runs): 58228µs
+Cached execution time (Average of 100 runs): 7227µs
+8.05700844057009 times faster.
 
 Current Query: 
-{
-  __schema {
-    types {
-      name
-      kind
-    }
+query {
+  devicesByCostcenterId(costCenterId: 1) {
+    description
+    imei
+    serial
+    make
+    model
+    orgId
+    orgUrn
+    costCenterId
+    costCenterUrn
   }
 }
 
-Uncached execution time (Average of 1000 runs): 9239µs
-Cached execution time (Average of 1000 runs): 379µs
-24 times faster.
+Uncached execution time (Average of 100 runs): 255806µs
+Cached execution time (Average of 100 runs): 38113µs
+6.71177813344528 times faster.
 
 
 Beginning SQL Tests
 
 Current Query: 
-SELECT *
-FROM Zach_SnapLogic_Demo
-WHERE id < 10;
+select 
+    d.deviceId as deviceId
+    , d.description as description
+    , d.Imei as imei
+    , d.Serial as serial
+    , d.Make as make
+    , d.Model as model
+    , d.orgId as orgId
+    , d.orgUrn as orgUrn
+    , d.costCenterId as costCenterId
+    , d.costCenterUrn as costCenterUrn
+from 
+    devices as d
+where 
+    orgId = 1;
 
-Uncached execution time (Average of 1000 runs): 6635µs
-Cached execution time (Average of 1000 runs): 279µs
-23 times faster.
+Uncached execution time (Average of 100 runs): 31497µs
+Cached execution time (Average of 100 runs): 34736µs
+0.906753800092123 times faster.
 
 Current Query: 
-SELECT *
-FROM Zach_SnapLogic_Demo
-WHERE id < 1000;
+select 
+    d.deviceId as deviceId
+    , d.description as description
+    , d.Imei as imei
+    , d.Serial as serial
+    , d.Make as make
+    , d.Model as model
+    , d.orgId as orgId
+    , d.orgUrn as orgUrn
+    , d.costCenterId as costCenterId
+    , d.costCenterUrn as costCenterUrn
+from 
+    devices as d
+where 
+    deviceId = 1;
 
-Uncached execution time (Average of 1000 runs): 271131µs
-Cached execution time (Average of 1000 runs): 1407µs
-192 times faster.
+Uncached execution time (Average of 100 runs): 4502µs
+Cached execution time (Average of 100 runs): 4148µs
+1.08534233365477 times faster.
 
 Current Query: 
-SELECT *
-FROM (SELECT * FROM Zach_SnapLogic_Demo WHERE id < 10) AS Q1, (SELECT * FROM Zach_SnapLogic_Demo WHERE id < 100 AND id >= 10) AS Q2;
+select 
+    d.deviceId as deviceId
+    , d.description as description
+    , d.Imei as imei
+    , d.Serial as serial
+    , d.Make as make
+    , d.Model as model
+    , d.orgId as orgId
+    , d.orgUrn as orgUrn
+    , d.costCenterId as costCenterId
+    , d.costCenterUrn as costCenterUrn
+from 
+    devices as d
+where 
+    costCenterId = 1;
 
-Uncached execution time (Average of 1000 runs): 675947µs
-Cached execution time (Average of 1000 runs): 1959µs
-345 times faster.
+Uncached execution time (Average of 100 runs): 35400µs
+Cached execution time (Average of 100 runs): 34102µs
+1.03806228373702 times faster.
 
