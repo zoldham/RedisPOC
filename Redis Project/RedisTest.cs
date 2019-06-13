@@ -21,7 +21,7 @@ class RedisTest
     static string GraphQLFolder = "TestQueriesGraphQL";                                                                     // Config value: Folder to load graphql queries from
     static string SQLFolder = "TestQueriesSQL";                                                                             // Config value: Folder to load SQL queries from
     static string dataFile = "redis_garbage.txt";                                                                           // Config value: File to load pre-generated k-v pair for redis from
-    static int numExecutions = 100;                                                                                         // Config value: Number of times to execute each query
+    static int numExecutions = 1000;                                                                                         // Config value: Number of times to execute each query
     static string logFile = "output.txt";                                                                                   // Config value: File to duplicate logging to
     static StreamWriter logWriter = new StreamWriter(logFile);                                                              // The logging stream
 
@@ -53,7 +53,7 @@ class RedisTest
             MicroLibrary.MicroStopwatch timer = new MicroLibrary.MicroStopwatch();
 
             // Get the result into the cache
-            string result = do_graphql_query_caching(curQuery).GetAwaiter().GetResult();
+            do_graphql_query_caching(curQuery).GetAwaiter().GetResult();
 
             // Time the query (cached) and sum the execution times
             long cachedTime = 0;
@@ -100,7 +100,7 @@ class RedisTest
             MicroLibrary.MicroStopwatch timer = new MicroLibrary.MicroStopwatch();
 
             // Get the result into the cache
-            string result = do_sql_query_caching(curQuery, cnn).GetAwaiter().GetResult();
+            do_sql_query_caching(curQuery, cnn).GetAwaiter().GetResult();
 
             // Time the query (cached) and sum the execution times
             long cachedTime = 0;
@@ -196,31 +196,27 @@ class RedisTest
 
         // check if the query is in Redis cache
         string key = query;
-        string returnVal = db.StringGet(key);
-        if (String.IsNullOrEmpty(returnVal))
+        string jsonString = db.StringGet(key);
+        if (String.IsNullOrEmpty(jsonString))
         {
 
             // Not in redis cache, query graphql
-            var request = new GraphQLRequest { Query = query };
-            var graphQLResponse = await graphQL.PostAsync(request);
-
-            // Transform into json string
-            var temp = JsonConvert.DeserializeObject<dynamic>(JsonConvert.SerializeObject(graphQLResponse));
-            temp.Remove("Errors");
-            returnVal = temp.ToString();
+            var graphQLResponse = await graphQL.PostQueryAsync(query);
+            jsonString = graphQLResponse.Data.ToString();
 
             // Conditionally add to redis cache 
             if (true)//returnVal.Length <= 10000)
             {
-                db.StringSetAsync(query, returnVal);
+                db.StringSetAsync(query, jsonString);
             }
 
             // done
-            return returnVal;
+            //do_logging_write(graphQLResponse.GetType().FullName);
+            return graphQLResponse.Data;
         } else
         {
             // Is in redis cache, return result
-            return returnVal;
+            return JsonConvert.DeserializeObject<dynamic>(jsonString);
         }
     }
 
