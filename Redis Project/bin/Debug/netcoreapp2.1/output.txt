@@ -15,9 +15,9 @@ query {
   }
 }
 
-Uncached execution time (Average of 1000 runs): 154285µs
-Cached execution time (Average of 1000 runs): 55771µs
-2.76640189345717 times faster.
+Uncached execution time (Average of 1000 runs): 162126µs
+Cached execution time (Average of 1000 runs): 55222µs
+2.93589511426605 times faster.
 
 Current Query: 
 query {
@@ -34,9 +34,9 @@ query {
   }
 }
 
-Uncached execution time (Average of 1000 runs): 23545µs
-Cached execution time (Average of 1000 runs): 4302µs
-5.47303579730358 times faster.
+Uncached execution time (Average of 1000 runs): 36908µs
+Cached execution time (Average of 1000 runs): 4139µs
+8.91712974148345 times faster.
 
 Current Query: 
 query {
@@ -53,9 +53,9 @@ query {
   }
 }
 
-Uncached execution time (Average of 1000 runs): 149584µs
-Cached execution time (Average of 1000 runs): 54912µs
-2.7240675990676 times faster.
+Uncached execution time (Average of 1000 runs): 152668µs
+Cached execution time (Average of 1000 runs): 55080µs
+2.7717501815541 times faster.
 
 
 Beginning SQL Tests
@@ -77,9 +77,9 @@ from
 where 
     orgId = 1;
 
-Uncached execution time (Average of 1000 runs): 21429µs
-Cached execution time (Average of 1000 runs): 32818µs
-0.652964836370285 times faster.
+Uncached execution time (Average of 1000 runs): 17920µs
+Cached execution time (Average of 1000 runs): 32901µs
+0.544664295918057 times faster.
 
 Current Query: 
 select 
@@ -98,9 +98,9 @@ from
 where 
     deviceId = 1;
 
-Uncached execution time (Average of 1000 runs): 5481µs
-Cached execution time (Average of 1000 runs): 4509µs
-1.21556886227545 times faster.
+Uncached execution time (Average of 1000 runs): 4414µs
+Cached execution time (Average of 1000 runs): 4190µs
+1.05346062052506 times faster.
 
 Current Query: 
 select 
@@ -119,7 +119,7 @@ from
 where 
     costCenterId = 1;
 
-Uncached execution time (Average of 1000 runs): 21282µs
-Cached execution time (Average of 1000 runs): 31324µs
-0.67941514493679 times faster.
+Uncached execution time (Average of 1000 runs): 18011µs
+Cached execution time (Average of 1000 runs): 32256µs
+0.558376736111111 times faster.
 
