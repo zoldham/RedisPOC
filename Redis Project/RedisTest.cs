@@ -21,7 +21,7 @@ class RedisTest
     static string GraphQLFolder = "TestQueriesGraphQL";                                                                     // Config value: Folder to load graphql queries from
     static string SQLFolder = "TestQueriesSQL";                                                                             // Config value: Folder to load SQL queries from
     static string dataFile = "redis_garbage.txt";                                                                           // Config value: File to load pre-generated k-v pair for redis from
-    static int numExecutions = 1000;                                                                                         // Config value: Number of times to execute each query
+    static int numExecutions = 1000;                                                                                        // Config value: Number of times to execute each query
     static string logFile = "output.txt";                                                                                   // Config value: File to duplicate logging to
     static StreamWriter logWriter = new StreamWriter(logFile);                                                              // The logging stream
 
