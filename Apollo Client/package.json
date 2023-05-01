@@ -20,6 +20,6 @@
     "graphql-tag": "^2.10.1",
     "subscriptions-transport-ws": "^0.9.16",
     "websocket": "^1.0.28",
-    "win-ca": "^3.0.5"
+    "win-ca": "^3.5.0"
   }
 }
